@@ -1,0 +1,114 @@
+{
+    "tar": {
+        "prefix": "tar",
+        "body": [
+             "target='_blank' rel='noopener noreferrer' "
+        ],
+        "description": ""
+    },
+    "xsaa": {
+        "prefix": "xsaa",
+        "body": [
+            "",
+            "export default function ${1:$TM_FILENAME_BASE}($2){",
+            "  return (",
+            "    <div>$3</div>",
+            "  );",
+            "}",
+            "",
+        ],
+        "description": ""
+    },
+
+    "asx": {
+        "prefix": "asx",
+        "body": [
+            "",
+            "export const ${1:$TM_FILENAME_BASE} = ($2) => {",
+            "  return (",
+            "    <div>$3</div>",
+            "  );",
+            "}",
+            "",
+        ],
+        "description": ""
+    },
+
+    "sa": {
+        "prefix": "sa",
+        "body": [
+            "",
+            "export type ${TM_FILENAME_BASE} = {",
+            "",
+            "    $3",
+            "",
+            "}",
+            "",
+        ],
+        "description": ""
+    },
+
+    "xsa": {
+        "prefix": "xsa",
+        "body": [
+            "",
+            "const ${1:$TM_FILENAME_BASE} = ($2) => {",
+            "  return (",
+            "    <div>$3</div>",
+            "  );",
+            "}",
+            "",
+            "export default ${1:$TM_FILENAME_BASE}",
+        ],
+        "description": ""
+    },
+
+
+    "Image" : {
+        "prefix": "ima",
+        "body": "<Image src=$1 width={$2} height={$3} alt='$4' />"
+    },
+
+    "br tag": {
+        "prefix": "br",
+        "body": "<br />$1"
+    },
+
+    "<br tag": {
+        "prefix": "<br",
+        "body": "<br />$1"
+    },
+
+    "br tag width className": {
+        "prefix": "brc",
+        "body": "<br className='$1' />$2"
+    },
+
+    "<br tag width className": {
+        "prefix": "<brc",
+        "body": "<br className='$1' />$2"
+    },
+
+    "<br tag width className SP": {
+        "prefix": "<brcsp",
+        "body": "<br className='block ${1:md}:hidden' />$2"
+    },
+
+    "<br tag width className PC": {
+        "prefix": "<brcpc",
+        "body": "<br className='hidden ${1:md}:block' />$2"
+    },
+
+    "NEXT JS ENV": {
+        "prefix": "N_",
+        "body": "NEXT_PUBLIC_$1=$2"
+    },
+
+    "z": {
+        "prefix": "zz",
+        "body": "'use client'"
+    },
+
+
+
+}
