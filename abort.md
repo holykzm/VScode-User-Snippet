@@ -243,3 +243,16 @@ export const useApi = <T extends BaseAPI>(
 - `useApi`フックは、クライアントサイドレンダリング（CSR）とサーバーサイドレンダリング（SSR）で異なるAPI設定を使用する
 - `Configuration`クラスはAPI設定を管理し、`getApiConfig`と`getApiConfigClient`関数はそれぞれSSRとCSR用の設定を返す
 - `AbortController`を使用して、180秒以上経過したリクエストをキャンセルする処理を追加することで、大きなファイルのアップロードや遅い回線での対応を行う
+
+
+---
+```
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (count < 15) {
+      const timer = setTimeout(() => setCount(count + 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [count]);
+```
