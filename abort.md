@@ -256,3 +256,76 @@ export const useApi = <T extends BaseAPI>(
     }
   }, [count]);
 ```
+
+
+---
+
+```
+import { useEffect } from 'react';
+import { Configuration, BaseAPI } from './runtime'; // 必要なインポートを追加
+
+export const useApi = <T extends BaseAPI>(
+  TargetAPI: new (config: Configuration) => T
+): T => {
+  const isBrowser = typeof window !== "undefined";
+  const newApiConfig = isBrowser ? getApiConfigClient() : getApiConfig();
+
+  // CSR
+  if (isBrowser) {
+    newApiConfig.middleware.push({
+      post: async (context): Promise<Response> => {
+        const { response } = context;
+        // タイマーのクリアはここで行います
+        if (context.abortTimeoutId) {
+          clearTimeout(context.abortTimeoutId);
+        }
+        switch (response?.status) {
+          case 200:
+          case 204:
+            return response;
+          // ... 省略 ...
+          default:
+            // ... エラーの処理 ...
+            return response;
+        }
+      },
+      pre: async (context) => {
+        // リクエスト送信時に`AbortController`を設定
+        const abortController = new AbortController();
+        context.init = { ...context.init, signal: abortController.signal };
+
+        // タイマーを設定
+        context.abortTimeoutId = setTimeout(() => abortController.abort(), 600); // テスト用に600msに設定
+
+        return context;
+      }
+    });
+  } else {
+    // SSR
+    newApiConfig.middleware.push({
+      post: async (context): Promise<Response> => {
+        const { response } = context;
+        // タイマーのクリアはここで行います
+        if (context.abortTimeoutId) {
+          clearTimeout(context.abortTimeoutId);
+        }
+        switch (response?.status) {
+          // ... 省略 ...
+        }
+      },
+      pre: async (context) => {
+        // リクエスト送信時に`AbortController`を設定
+        const abortController = new AbortController();
+        context.init = { ...context.init, signal: abortController.signal };
+
+        // タイマーを設定
+        context.abortTimeoutId = setTimeout(() => abortController.abort(), 600); // テスト用に600msに設定
+
+        return context;
+      }
+    });
+  }
+
+  return new TargetAPI(newApiConfig);
+};
+```
