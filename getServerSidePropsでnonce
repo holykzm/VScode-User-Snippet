@@ -1,0 +1,36 @@
+import { GetServerSideProps } from 'next';
+
+interface Props {
+  nonce: string;
+}
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({ req }) => {
+  const nonce = req.headers['x-nonce'];
+
+  if (!nonce || Array.isArray(nonce)) {
+    throw new Error('Nonce is missing or invalid');
+  }
+
+  return {
+    props: {
+      nonce,
+    },
+  };
+};
+
+const Page = ({ nonce }: Props) => {
+  return (
+    <div>
+      <h1>Nonce Example</h1>
+      <p>Your nonce is: {nonce}</p>
+      {/* nonce を使用したスクリプト例 */}
+      <script nonce={nonce}>
+        {`
+          console.log('This script is executed with nonce:', '${nonce}');
+        `}
+      </script>
+    </div>
+  );
+};
+
+export default Page;
