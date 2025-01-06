@@ -1,0 +1,151 @@
+以下では、キャプチャに写っている主なレジストリ項目(HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings配下)を、よく使われるものを中心に簡単に解説します。また、末尾で参照できるMicrosoft公式ドキュメントもご案内します。
+
+1. Internet Settingsの全般について
+
+レジストリ パス
+
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings
+
+Internet Explorer(IE) や Windowsの「インターネット オプション」の各種設定が格納される領域です。
+Edgeなどを使っていても、一部システム的にこのキーが参照されるケースがあり、Proxy設定やZone設定(セキュリティレベル)などの情報がここに保存されます。
+
+2. 主なキーと値の例
+
+2-1. CertificateRevocation
+
+"CertificateRevocation"=dword:00000001
+
+	•	意味: サーバ証明書が失効(Revocation)していないかをチェックする機能のON/OFF。
+	•	1 で“有効”、0 で“無効”。
+
+2-2. DisableCachingOfSSLPages
+
+"DisableCachingOfSslPages"=dword:00000000
+
+	•	意味: HTTPSページのキャッシュ(一時ファイル)を無効化するかどうか。
+	•	1 で“キャッシュしない(無効化)”、0 で“キャッシュを許可”。
+
+2-3. IES_UA_Backup_Flag
+
+"IES_UA_Backup_Flag"="5.0"
+
+	•	意味: User-Agentに関連したバージョン情報をバックアップしている設定。
+	•	通常はIEのバージョン（例: “5.0” “7.0” “8.0”など）などが入ることがある。
+
+2-4. privacyAdvanced
+
+"privacyAdvanced"=dword:00000001
+
+	•	意味: プライバシー設定(クッキーの制御など)を「詳細設定」にしているかどうかを示すフラグ。
+
+2-5. SecureProtocols
+
+"SecureProtocols"=dword:00000280
+
+	•	意味: TLS/SSL のバージョンごとの有効/無効をビットマスクで示す値。
+例: TLS1.0や1.1、1.2を有効にする場合、それぞれのビットに応じた合計値になります。
+
+2-6. ProxyEnable, ProxyOverride, MigrateProxy など
+
+"ProxyEnable"=dword:00000000
+"ProxyOverride"="*.local"
+"MigrateProxy"=dword:00000001
+
+	•	意味:
+	•	ProxyEnable: プロキシ設定を有効にするかどうか。1 なら有効、0 なら無効。
+	•	ProxyOverride: プロキシを経由しないホスト名やドメイン(*.localなど)の指定。
+	•	MigrateProxy: 古いバージョンなどからのプロキシ設定を引き継ぐかどうか。
+
+2-7. LockDatabase
+
+"LockDatabase"=hex(b):24,4... (16進数の羅列)
+
+	•	意味: “LockDatabase” はブラウザのデータベース(自動入力やCookie関連)をロックする設定等で使われます。
+	•	hex(b) はバイナリ値をレジストリエディタで表現するときの形式。
+
+3. Internet Settings\5.0 配下
+
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\5.0
+
+これはIE5.xをベースにしたより詳細なサブキー構成で、キャッシュやCookieの保存先・容量などが格納されています。古い名前ですが、後のIEバージョンでも一部継続して使われます。
+
+3-1. \Cache サブキー
+
+"ContentLimit"=dword:000001f4
+"TotalContentLimit"=dword:000001ef
+"AppContainerTotalContentLimit"=dword:000003e8
+"AppContainerContentLimit"=dword:00000032
+"Version"=dword:00000004
+
+	•	意味:
+	•	ContentLimit: 一般的なキャッシュ容量の制限(単位はKB, あるいはByte換算の場合も)
+	•	TotalContentLimit: キャッシュ全体の最大容量
+	•	AppContainer～: サンドボックス的に動作するプロセス用のキャッシュ制限
+	•	Version: キャッシュ管理バージョン
+
+3-2. \Cache\Cookies, \Cache\Content, \Cache\Extensible Cache
+	•	意味: Cookie保存先、コンテンツ一時ファイル保存先、拡張キャッシュの保存先パスやオプションが格納。
+
+"CachePrefix"="Cookie:"
+"CacheLimit"=dword:00000001
+"CachePath"="C:\\Users\\USER\\AppData\\Local\\Microsoft\\Feeds Cache" 
+...
+
+	•	CachePrefix: ファイル名(サブフォルダ)接頭辞
+	•	CachePath: キャッシュフォルダのパス
+	•	CacheLimit: そのカテゴリのキャッシュサイズ上限
+
+4. Connections キー
+
+"SavedLegacySettings"=hex:46,00,00,00,04,00...
+"DefaultConnectionSettings"=hex:46,00,00,00,04,00...
+
+	•	意味: 過去のダイヤルアップ接続/ネットワーク接続の設定や、現在の既定接続情報(プロキシ・VPN等の設定が含まれる)がバイナリ列で保存されています。
+
+5. Zones と Lockdown_Zones
+
+Internet Explorerの「セキュリティゾーン」(インターネット・イントラネット・信頼済みサイト・制限付きサイト等) に関するレジストリです。
+	•	HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Zones
+	•	HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Lockdown_Zones
+
+5-1. Zones のサブキー (例: 0, 1, 2, 3, 4)
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\2]
+"DisplayName"="Trusted sites"
+"PMDisplayName"="Trusted sites [Protected Mode]"
+"CurrentLevel"=dword:00011000
+"Flags"=dword:00000047
+"1200"=dword:00000000
+"1400"=dword:00000000
+...
+
+	•	Zones\0: My Computer (ローカルマシン)
+	•	Zones\1: Local intranet (イントラネット)
+	•	Zones\2: Trusted sites (信頼済みサイト)
+	•	Zones\3: Internet (インターネット)
+	•	Zones\4: Restricted sites (制限付きサイト)
+
+それぞれのゾーンに対するセキュリティレベル(CurrentLevel)や、スクリプト実行許可・ActiveX許可などの詳細フラグ(1200や1400など)が格納されています。
+
+5-2. Lockdown_Zones
+
+Lockdown_Zones は「保護モード(Protected Mode)」やさらに制限の強い設定が適用される場合のゾーン設定です。
+キー名や値は Zones 配下とほぼ同様の仕組みで、それぞれのゾーンに対してさらに厳しい設定(ActiveXやスクリプトの制御)を行うのに使われます。
+
+6. レジストリの見方・参考サイト
+	1.	Microsoft公式ドキュメント
+	•	Internet Explorerのレジストリ キーと設定
+	•	Internet Explorer でセキュリティ ゾーンを設定する
+	•	上記ページでは、代表的なキーや値の意味、ビットマスク(たとえばSecureProtocols)の詳細などが解説されています。
+	2.	Windowsのグループポリシー設定やインターネット オプション
+	•	「インターネット オプション」の画面で設定すると、対応するキーがレジストリに反映されるので、実際にオプションを変更→レジストリで確認→値の意味を紐づける、という流れで理解しやすくなります。
+	3.	各種ブログやTech系サイト
+	•	キー名+“registry”などで検索すると有志がまとめた解説サイトが出てきます。
+	•	ただし、古いバージョンの情報や誤りが混ざっていることもあるので、公式ドキュメントと合わせて確認すると安心です。
+
+まとめ
+	•	これらは主にInternet Explorer(IE) の各種設定(セキュリティゾーン・キャッシュ・プライバシー・証明書設定・プロキシ設定など) を示すレジストリです。
+	•	Windows OS本体のインターネット機能(WinHTTPなど)でこれらの値が参照される場合もあり、IEを使わない環境でも残っていることがあります。
+	•	詳細を知りたい場合は上記「Microsoft公式ドキュメント」にある「セキュリティゾーン」や「SecureProtocols」などの説明が有用です。
+
+基本的には「インターネット オプション」→「セキュリティ」や「詳細設定」などのタブ設定に対応しており、「どのオプションをオンにするとどのレジストリがどう変わるか」を照らし合わせて見るのが理解の近道です。
