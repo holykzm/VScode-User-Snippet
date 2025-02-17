@@ -1,1 +1,7 @@
+"scripts": {
+  "lint": "eslint --config config/eslint/.eslintrc.json --ignore-path config/eslint/.eslintignore \"src/**/*.+(js|ts|tsx)\" --rule \"@typescript-eslint/no-explicit-any:warn\""
+}
+
+
+
 npx eslint --print-config yourFile.ts | Select-String "no-explicit-any"
