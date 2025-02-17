@@ -1,1 +1,1 @@
-npx eslint --print-config yourFile.ts | grep no-explicit-any
+npx eslint --print-config yourFile.ts | Select-String "no-explicit-any"
